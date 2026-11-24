@@ -8,8 +8,8 @@
 [![CI](https://github.com/PianoNic/ColorUNet-Manga/actions/workflows/training-ci.yml/badge.svg)](https://github.com/PianoNic/ColorUNet-Manga/actions/workflows/training-ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-![Black-and-white input and ColorUNet-Manga output](assets/demo.jpg)
-<sub>Public-domain pages never seen in training (Wikimedia Commons): Wally Wood, <i>Eerie</i> No. 2 (1951); Sheldon Moldoff, <i>The Dead Lover Returns</i>.</sub>
+![Series cover as reference, black-and-white page, ColorUNet-Manga output](assets/demo.jpg)
+<sub>Series cover as the color reference → black-and-white page → output. <i>Tonikaku Kawaii (Fly Me to the Moon)</i> ch. 305.5 © Kenjiro Hata / Shogakukan, a series not in the training data.</sub>
 
 </div>
 
