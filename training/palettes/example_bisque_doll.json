@@ -1,0 +1,9 @@
+{
+  "series": "Sono Bisque Doll wa Koi o Suru (example: positions are per page, as fractions of width/height)",
+  "pages": {
+    "ch0115.5_p012": [
+      {"x": 0.244, "y": 0.857, "color": "#f3d27a", "label": "Marin hair"},
+      {"x": 0.289, "y": 0.747, "color": "#f3d27a", "label": "Marin hair"}
+    ]
+  }
+}

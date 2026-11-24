@@ -1,0 +1,34 @@
+# Data, checkpoints and exports never go in git (training data: see training/DATASETS.md;
+# weights: https://huggingface.co/PianoNic/ColorUNet-Manga-61M).
+work/
+runs/
+.venv*/
+training/checkpoints/
+training/data/pairs*/
+training/data/raw*/
+training/data/enhanced/
+training/data/teacher_*/
+training/eval/testset*/
+training/eval/out/
+training/eval/compare/
+training/eval/reference/*.jpg
+training/eval/reference/*.jpeg
+training/eval/reference/*.png
+training/export/web*/
+training/export/*.onnx
+training/export/*.engine
+third_party/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Tools
+.claude/
+.playwright-mcp/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

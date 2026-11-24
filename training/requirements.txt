@@ -1,0 +1,13 @@
+# torch is installed separately: the CUDA 12.8+ build on GPUs (RTX 50xx needs cu128,
+# https://download.pytorch.org/whl/cu128), the CPU wheel for CI and laptops.
+numpy>=1.26
+opencv-python-headless>=4.9
+pillow>=10.0
+timm>=1.0
+# export/ (ONNX for the browser and TensorRT)
+onnx>=1.16
+onnxscript>=0.1
+onnxruntime>=1.18
+# data/openclipart.py renders SVGs
+resvg-py>=0.1
+# on the RTX 4070 only, for TensorRT engines: tensorrt
