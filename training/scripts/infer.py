@@ -23,6 +23,7 @@ from models import io as mio  # noqa: E402
 from models.descreen import descreen as descreen_page  # noqa: E402
 from models.hints import load_palette, palette_hints, points_for  # noqa: E402
 from models.lab import merge_lab  # noqa: E402
+from models.unet import cover_brake  # noqa: E402
 
 
 class Colorizer:
@@ -40,6 +41,17 @@ class Colorizer:
         self.upsample, self.chroma_falloff, self.descreen = upsample, chroma_falloff, descreen
         self.fp16 = fp16 and device == "cuda"
         self.gen = mio.load_model(weights, device)
+        self.tokens = self.brake = None
+
+    @torch.no_grad()
+    def set_reference(self, path):
+        """Use a colored reference of the series (its cover) for every following page; None to clear."""
+        if path is None or not getattr(self.gen, "use_ref", False):
+            self.tokens = self.brake = None
+            return
+        ref = mio.load_ref(path, self.device)
+        self.tokens = self.gen.ref_tokens(ref)
+        self.brake = cover_brake(ref) if getattr(self.gen, "use_cls", False) else None
 
     @torch.no_grad()
     def __call__(self, gray_u8: np.ndarray, points=None) -> np.ndarray:
@@ -47,7 +59,7 @@ class Colorizer:
         g, hw = mio.resize_for_model(page, self.long_side)
         hint = palette_hints(points, g.shape, hw).to(self.device) if points else None
         with torch.autocast("cuda", dtype=torch.float16, enabled=self.fp16):
-            out, _ = self.gen(mio.make_input(g, self.device, hint))
+            out, _ = self.gen(mio.make_input(g, self.device, hint), self.tokens, brake=self.brake)
         return merge_lab(
             gray_u8, mio.to_rgb01(out, hw), self.upsample, self.chroma_falloff, L_source=page if self.descreen else None
         )
@@ -69,6 +81,9 @@ def main():
     )
     ap.add_argument("--descreen", action="store_true", help="smooth screentone regions of L")
     ap.add_argument("--palette", help="per-series palette JSON (see models/hints.py)")
+    ap.add_argument(
+        "--ref", help="the series cover (or a colored page) as color reference, for models trained with one"
+    )
     ap.add_argument("--sbs", action="store_true", help="also save [original | color] side by side")
     ap.add_argument("--cpu", action="store_true")
     args = ap.parse_args()
@@ -77,6 +92,7 @@ def main():
     col = Colorizer(
         args.weights, device, args.long_side, not args.fp32, args.upsample, args.chroma_falloff, args.descreen
     )
+    col.set_reference(args.ref)
     palette = load_palette(args.palette) if args.palette else None
     paths = [args.input] if os.path.isfile(args.input) else mio.list_images(args.input)
     os.makedirs(args.out, exist_ok=True)
