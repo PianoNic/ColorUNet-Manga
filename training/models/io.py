@@ -12,10 +12,22 @@ IMAGE_EXTS = (".png", ".jpg", ".jpeg", ".webp", ".bmp", ".tif", ".tiff")
 
 
 def load_model(weights: str = DEFAULT_WEIGHTS, device: str = "cuda"):
-    """Load a ColorUNet checkpoint written by scripts/finetune.py."""
+    """Load a ColorUNet checkpoint: a .pt written by scripts/finetune.py, or a released
+    model.safetensors with its config.json next to it (https://huggingface.co/PianoNic/ColorUNet-Manga-61M)."""
     import sys
 
     from models.unet import ColorUNet
+
+    if weights.endswith(".safetensors"):
+        import json
+
+        from safetensors.torch import load_file
+
+        with open(os.path.join(os.path.dirname(os.path.abspath(weights)), "config.json"), encoding="utf-8") as f:
+            cfg = json.load(f)
+        net = ColorUNet(pretrained=False, ref=bool(cfg.get("ref")), cls=bool(cfg.get("cls")))
+        net.load_state_dict(load_file(weights))
+        return net.to(device).eval()
 
     ck = torch.load(weights, map_location="cpu", weights_only=False)
     if ck.get("args", {}).get("enhanced_data"):
